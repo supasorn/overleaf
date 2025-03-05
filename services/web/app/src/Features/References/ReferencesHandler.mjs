@@ -190,8 +190,8 @@ export default ReferencesHandler = {
                 const { entries, errors } = BibtexParser(bibContent);
 
                 for (const entry of entries) {
-                  // keys.push(entry.EntryKey + ";  " + entry.Fields.title);
-                  keys.push(entry.EntryKey);
+                  keys.push(entry.EntryKey + ";  " + entry.Fields.title);
+                  // keys.push(entry.EntryKey);
                 }
               });
               return callback(null, {keys: keys})
