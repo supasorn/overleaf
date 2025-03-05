@@ -37,7 +37,7 @@ services:
     environment:
       - NODE_OPTIONS=--inspect=0.0.0.0:9229
     ports:
-      - "127.0.0.1:9233:9229"
+      - "0.0.0.0:9233:9229"
     volumes:
       - ../services/docstore/app:/overleaf/services/docstore/app
       - ../services/docstore/app.js:/overleaf/services/docstore/app.js
@@ -106,18 +106,18 @@ services:
     environment:
       - NODE_OPTIONS=--inspect=0.0.0.0:9229
     ports:
-      - "127.0.0.1:9237:9229"
+      - "0.0.0.0:9237:9229"
     volumes:
       - ../services/real-time/app:/overleaf/services/real-time/app
       - ../services/real-time/app.js:/overleaf/services/real-time/app.js
       - ../services/real-time/config:/overleaf/services/real-time/config
 
   web:
-    command: ["node", "--watch", "app.js", "--watch-locales"]
+    command: ["node", "--watch", "app.mjs", "--watch-locales"]
     environment:
       - NODE_OPTIONS=--inspect=0.0.0.0:9229
     ports:
-      - "127.0.0.1:9229:9229"
+      - "0.0.0.0:9229:9229"
     volumes:
       - ../services/web/app:/overleaf/services/web/app
       - ../services/web/app.mjs:/overleaf/services/web/app.mjs
@@ -125,7 +125,7 @@ services:
       - ../services/web/locales:/overleaf/services/web/locales
       - ../services/web/modules:/overleaf/services/web/modules
       - ../services/web/public:/overleaf/services/web/public
-
+#
   webpack:
     volumes:
       - ../services/web/app:/overleaf/services/web/app

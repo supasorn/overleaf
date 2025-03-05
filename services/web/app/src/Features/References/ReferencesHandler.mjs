@@ -19,17 +19,21 @@ import settings from '@overleaf/settings'
 import Features from '../../infrastructure/Features.js'
 import ProjectGetter from '../Project/ProjectGetter.js'
 import UserGetter from '../User/UserGetter.js'
+import ProjectEntityHandler from '../Project/ProjectEntityHandler.js'
 import DocumentUpdaterHandler from '../DocumentUpdater/DocumentUpdaterHandler.js'
 import _ from 'lodash'
 import Async from 'async'
 import Errors from '../Errors/Errors.js'
 import { promisify } from '@overleaf/promise-utils'
 import HistoryURLHelper from '../History/HistoryURLHelper.js'
+import BibtexParser from '../../util/bib2json.js'
 
 let ReferencesHandler
 
+console.log("********************************************** in")
 if (!Features.hasFeature('references')) {
   logger.debug('references search not enabled')
+  console.log("********************************************** 2")
 }
 
 export default ReferencesHandler = {
@@ -130,9 +134,11 @@ export default ReferencesHandler = {
   },
 
   _doIndexOperation(projectId, project, docIds, fileRefs, callback) {
-    if (!Features.hasFeature('references')) {
-      return callback()
-    }
+    console.log("-----------------------------------------", Features.hasFeature('references'))
+
+    // if (!Features.hasFeature('references')) {
+      // return callback()
+    // }
     const historyId = project?.overleaf?.history?.id
     if (!historyId) {
       return callback(
@@ -177,6 +183,29 @@ export default ReferencesHandler = {
             )
           )
           const sourceURLs = bibDocUrls.concat(bibFileUrls)
+          // return callback(null, {keys: ['a', 'b']})
+          let keys = [];
+
+          Promise.all(docIds.map(docId => 
+            ProjectEntityHandler.promises.getDoc(projectId, docId)
+          ))
+            .then(results => {
+              results.forEach(({ lines }, index) => {
+                console.log("========================", docIds[index], lines);
+                const bibContent = lines.join('\n');
+                const { entries, errors } = BibtexParser(bibContent);
+
+                for (const entry of entries) {
+                  keys.push(entry.EntryKey + ";  " + entry.Fields.title);
+                }
+              });
+              return callback(null, {keys: keys})
+            })
+            .catch(error => {
+              OError.tag(error, 'error getting documents', { projectId, docIds });
+              return callback(error);
+            });
+          /*
           return request.post(
             {
               url: `${settings.apis.references.url}/project/${projectId}/index`,
@@ -203,7 +232,7 @@ export default ReferencesHandler = {
                 return callback(err)
               }
             }
-          )
+          )*/
         }
       )
     })

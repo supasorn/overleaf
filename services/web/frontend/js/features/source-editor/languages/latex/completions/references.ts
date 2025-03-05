@@ -21,6 +21,7 @@ export function buildReferenceCompletions(
     completions.references.push({
       type: 'reference',
       label: referenceKey,
+      apply: referenceKey.split(';  ')[0],
       extend: extendRequiredParameter,
       section: maybeGetSectionForOption(context, 'references'),
       deduplicate: {
