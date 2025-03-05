@@ -30,10 +30,8 @@ import BibtexParser from '../../util/bib2json.js'
 
 let ReferencesHandler
 
-console.log("********************************************** in")
 if (!Features.hasFeature('references')) {
   logger.debug('references search not enabled')
-  console.log("********************************************** 2")
 }
 
 export default ReferencesHandler = {
@@ -134,8 +132,6 @@ export default ReferencesHandler = {
   },
 
   _doIndexOperation(projectId, project, docIds, fileRefs, callback) {
-    console.log("-----------------------------------------", Features.hasFeature('references'))
-
     // if (!Features.hasFeature('references')) {
       // return callback()
     // }
@@ -183,7 +179,6 @@ export default ReferencesHandler = {
             )
           )
           const sourceURLs = bibDocUrls.concat(bibFileUrls)
-          // return callback(null, {keys: ['a', 'b']})
           let keys = [];
 
           Promise.all(docIds.map(docId => 
@@ -191,12 +186,12 @@ export default ReferencesHandler = {
           ))
             .then(results => {
               results.forEach(({ lines }, index) => {
-                console.log("========================", docIds[index], lines);
                 const bibContent = lines.join('\n');
                 const { entries, errors } = BibtexParser(bibContent);
 
                 for (const entry of entries) {
-                  keys.push(entry.EntryKey + ";  " + entry.Fields.title);
+                  // keys.push(entry.EntryKey + ";  " + entry.Fields.title);
+                  keys.push(entry.EntryKey);
                 }
               });
               return callback(null, {keys: keys})
